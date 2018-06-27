@@ -104,7 +104,7 @@ GetComparisonDFFromPairs.randomForest <- function(rfFit, pairs, u, v) {
 
 #' @export
 GetComparisonDFFromPairs.gbm <- function(rfFit, pairs, u, v) {
-  # For classification, we need to specify that the predictions should be probabilties (not classes)
+  # For classification, we need to specify that the predictions should be probabilities (not classes)
   if (rfFit$type == "classification") { 
     if (length(rfFit$classes) > 2) {
       stop("Sorry, I don't know what to do when there are more than 2 classes.")

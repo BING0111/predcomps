@@ -19,7 +19,7 @@
 #' v <- rnorm(100)
 #' u <- v + 0.3*rnorm(100)
 #' qplot(v,u)
-#' X = data.frame(v=v,u=u)
+#' X <- data.frame(v=v,u=u)
 #' pairsDF <- GetPairs(X, "v", "u")
 #' pairsDFRow1 <- subset(pairsDF, OriginalRowNumber==1)
 #' # When we subset to one "original row number", all of the v's are the same:
@@ -59,8 +59,7 @@ GetPairs <- function(X, u, v,
   vMatrix1 <- as.matrix(X1[,v])
   vMatrix2 <- as.matrix(X2[,v])
   
-  
-  covV=cov(vMatrix2)
+  covV <- cov(vMatrix2)
   
   distMatrix <- apply(vMatrix1, 1, function(row) mahalanobis(vMatrix2, row, covV))
   dim(distMatrix)
@@ -109,14 +108,15 @@ GetPairs <- function(X, u, v,
 
 PlotPairCumulativeWeights <- function(pairs, numOriginalRowNumbersToPlot = 20) {
   rowNumSample <- sample(unique(pairs$OriginalRowNumber))[1:numOriginalRowNumbersToPlot]
-  pairsWithCumWeightSums <- pairs %.% 
-    group_by(OriginalRowNumber) %.% 
-    arrange(OriginalRowNumber, -Weight) %.% 
+  pairsWithCumWeightSums <- pairs %>% 
+    group_by(OriginalRowNumber) %>% 
+    arrange(OriginalRowNumber, -Weight) %>% 
     mutate(CumulativeWeight = cumsum(Weight), Rank = dense_rank(-Weight))
   
   pairsSubset <- subset(pairsWithCumWeightSums, OriginalRowNumber %in% rowNumSample)
   
   ggplot() + 
     geom_line(aes(x=Rank, y=CumulativeWeight, color=factor(OriginalRowNumber)), data = pairsSubset, alpha = .2) + 
-    geom_line(aes(x=Rank, y=CumulativeWeight), stat = "summary", fun.y = "median", data=pairsWithCumWeightSums)
+    geom_line(aes(x=Rank, y=CumulativeWeight), stat = "summary", fun.y = "median", data=pairsWithCumWeightSums) +
+    scale_color_discrete(name='OriginalRowNumber')
 }  
